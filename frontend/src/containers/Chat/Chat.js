@@ -1,15 +1,14 @@
 import React, {Component} from 'react';
+import {connect} from "react-redux";
 
 class Chat extends Component {
     state = {
-        username: '',
-        usernameSet: false,
         messages: [],
         messageText: ''
     };
 
     componentDidMount() {
-        this.websocket = new WebSocket('ws://localhost:8000/chat');
+        this.websocket = new WebSocket(`ws://localhost:8000/chat?token=${this.props.user.token}`);
 
         this.websocket.onmessage = event => {
             const decodedMessage = JSON.parse(event.data);
@@ -27,27 +26,18 @@ class Chat extends Component {
         });
     };
 
-    setUsername = () => {
-        const message = {
-            type: 'SET_USERNAME',
-            username: this.state.username
-        };
-
-        this.websocket.send(JSON.stringify(message));
-        this.setState({usernameSet: true});
-    };
-
     sendMessage = () => {
         const message = JSON.stringify({
             type: 'CREATE_MESSAGE',
-            text: this.state.messageText
+            text: this.state.messageText,
+            username: this.props.user.username
         });
 
         this.websocket.send(message);
     };
 
     render() {
-        let chat = (
+        return (
             <div>
                 {this.state.messages.map((message, i) => (
                     <div key={i}>
@@ -66,27 +56,11 @@ class Chat extends Component {
                 </div>
             </div>
         );
-
-        if (!this.state.usernameSet) {
-            chat = (
-                <div>
-                    <input
-                        type="text"
-                        name="username"
-                        value={this.state.username}
-                        onChange={this.changeInputHandler}
-                    />
-                    <input type="button" onClick={this.setUsername} value="Set username"/>
-                </div>
-            );
-        }
-
-        return (
-            <div className="App">
-                {chat}
-            </div>
-        );
     }
 }
 
-export default Chat;
+const mapStateToProps = state => ({
+    user: state.users.user
+});
+
+export default connect(mapStateToProps)(Chat);

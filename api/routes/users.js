@@ -19,7 +19,7 @@ router.post('/', async (req, res) => {
 
 router.post('/sessions', async (req, res) => {
 
-    const user = await User.findOne({login: req.body.login});
+    const user = await User.findOne({login: req.body.username});
     if (!user) return res.status(400).send({message: 'Username or Password incorrect !'});
 
     const isMatch = await user.checkPassword(req.body.password);
