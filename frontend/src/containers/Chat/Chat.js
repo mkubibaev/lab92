@@ -3,37 +3,31 @@ import {connect} from "react-redux";
 import OnlineUsersList from "../../components/OnlineUsersList/OnlineUsersList";
 import Messages from "../../components/Messages/Messages";
 import ChatForm from "../../components/ChatForm/ChatForm";
+import {wsURL} from "../../constants";
+import store from "../../store/configureStore";
 
 class Chat extends Component {
     state = {
-        onlineUsers: [],
         messages: [],
         messageText: ''
     };
 
     componentDidMount() {
-        this.websocket = new WebSocket(`ws://localhost:8000/chat?token=${this.props.user.token}`);
+        this.websocket = new WebSocket(`${wsURL}/chat?token=${this.props.user.token}`);
 
         this.websocket.onmessage = event => {
             const decodedMessage = JSON.parse(event.data);
-            if (decodedMessage.type === 'NEW_MESSAGE') {
-                this.setState({
-                    messages: [...this.state.messages, decodedMessage.message]
-                });
-            } else if (decodedMessage.type === 'ONLINE_USERS') {
-                this.setState( {
-                    onlineUsers: decodedMessage.onlineUsers
-                });
+
+            if (decodedMessage && decodedMessage.type) {
+                store.dispatch(decodedMessage);
             }
         };
     };
 
-
-
-    sendMessage = () => {
+    sendMessage = messageText => {
         const message = JSON.stringify({
             type: 'CREATE_MESSAGE',
-            text: this.state.messageText,
+            text: messageText,
             username: this.props.user.username
         });
 
@@ -44,11 +38,15 @@ class Chat extends Component {
         return (
             <div className="row">
                 <div className="col-12 col-sm-4">
-                    <OnlineUsersList onlineUsers={this.state.onlineUsers}/>
+                    <OnlineUsersList onlineUsers={this.props.onlineUsers}/>
                 </div>
                 <div className="col-12 col-sm-8">
-                    <Messages/>
-                    <ChatForm/>
+                    <Messages
+                        messages={this.props.messages}
+                    />
+                    <ChatForm
+                        onSubmit={this.sendMessage}
+                    />
                 </div>
             </div>
         );
@@ -56,7 +54,9 @@ class Chat extends Component {
 }
 
 const mapStateToProps = state => ({
-    user: state.users.user
+    user: state.users.user,
+    onlineUsers: state.chat.onlineUsers,
+    messages: state.chat.messages
 });
 
 export default connect(mapStateToProps)(Chat);

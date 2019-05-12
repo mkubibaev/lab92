@@ -12,6 +12,13 @@ class ChatForm extends Component {
         });
     };
 
+    submitFormHandler = event => {
+        event.preventDefault();
+
+        const state = {...this.state};
+        this.props.onSubmit(state.message);
+    };
+
     getFieldHasError = fieldName => {
         return (
             this.props.error &&
@@ -24,7 +31,7 @@ class ChatForm extends Component {
     render() {
         return (
             <div className="box p-3">
-                <form>
+                <form onSubmit={this.submitFormHandler}>
                     <div className="row">
                         <div className="col-10 mb-n3">
                             <FormElement

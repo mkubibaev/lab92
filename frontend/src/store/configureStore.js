@@ -6,12 +6,14 @@ import thunkMiddleware from "redux-thunk";
 import axios from '../axios-api';
 import {loadState, saveState} from "./localStorage";
 import usersReducer from "./reducers/usersReducer";
+import chatReducer from "./reducers/chatReducer";
 
 export const history = createBrowserHistory();
 
 const rootReducer = combineReducers({
     router: connectRouter(history),
     users: usersReducer,
+    chat: chatReducer
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
