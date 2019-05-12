@@ -1,10 +1,11 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import {connect} from "react-redux";
+import Form from "../../components/UI/Form/Form";
+import Message from "../../components/Message/Message";
 
 class Chat extends Component {
     state = {
         messages: [],
-        messageText: ''
     };
 
     componentDidMount() {
@@ -20,41 +21,36 @@ class Chat extends Component {
         };
     }
 
-    changeInputHandler = event => {
-        this.setState({
-            [event.target.name]: event.target.value
-        });
-    };
-
-    sendMessage = () => {
-        const message = JSON.stringify({
-            type: 'CREATE_MESSAGE',
-            text: this.state.messageText,
-            username: this.props.user.username
-        });
-
-        this.websocket.send(message);
-    };
-
     render() {
         return (
-            <div>
-                {this.state.messages.map((message, i) => (
-                    <div key={i}>
-                        <b>{message.username}</b>:
-                        <span>{message.text}</span>
+            <Fragment>
+                <div className="container">
+                    <div className="item list-group">
+                        <h5>Online users</h5>
+                        <a href="#" className="list-group-item list-group-item-action active">
+                            Cras justo odio
+                        </a>
+                        <a href="#" className="list-group-item list-group-item-action">Dapibus ac facilisis in</a>
+                        <a href="#" className="list-group-item list-group-item-action">Morbi leo risus</a>
+                        <a href="#" className="list-group-item list-group-item-action">Porta ac consectetur ac</a>
+                        <a href="#" className="list-group-item list-group-item-action disabled" tabIndex="-1"
+                           aria-disabled="true">Vestibulum at eros</a>
                     </div>
-                ))}
-                <div>
-                    <input
-                        type="text"
-                        name="messageText"
-                        value={this.state.messageText}
-                        onChange={this.changeInputHandler}
-                    />
-                    <input type="button" value="Send" onClick={this.sendMessage}/>
+                    <div className="item chat-room">
+                        <h5>Chat room</h5>
+                        {this.state.messages.map((message, i) => (
+                            <Message
+                                key={i}
+                                username={message.username}
+                                text={message.text}
+                            />
+                        ))}
+                    </div>
                 </div>
-            </div>
+                    <Form
+                        error={this.props.error}
+                    />
+            </Fragment>
         );
     }
 }

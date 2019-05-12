@@ -7,7 +7,7 @@ const Header = ({user, logout}) => {
             <NavLink to="/" className="navbar-brand">Chat</NavLink>
             {user
                 ? <div>
-                    <span>Hi, {user.fullName}</span>
+                    <span className="fullName">Hi, {user.fullName}</span>
                     <span onClick={logout} className="btn btn-sm btn-outline-light">Log out</span>
                 </div>
                 : <div>

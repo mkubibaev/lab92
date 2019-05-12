@@ -11,3 +11,22 @@ body {
   max-width: 380px;
   margin: 0 auto 30px;
 }
+
+.container {
+  display: flex;
+  width: 100%;
+}
+
+.item {
+  margin-right: 50px;
+  width: 50%;
+}
+
+.fullName {
+  color: white;
+  margin-right: 15px;
+}
+
+.list-group {
+  max-width: 250px;
+}
