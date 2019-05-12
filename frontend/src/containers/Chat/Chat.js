@@ -1,11 +1,14 @@
-import React, {Component, Fragment} from 'react';
+import React, {Component} from 'react';
 import {connect} from "react-redux";
-import Form from "../../components/UI/Form/Form";
-import Message from "../../components/Message/Message";
+import OnlineUsersList from "../../components/OnlineUsersList/OnlineUsersList";
+import Messages from "../../components/Messages/Messages";
+import ChatForm from "../../components/ChatForm/ChatForm";
 
 class Chat extends Component {
     state = {
+        onlineUsers: [],
         messages: [],
+        messageText: ''
     };
 
     componentDidMount() {
@@ -17,40 +20,37 @@ class Chat extends Component {
                 this.setState({
                     messages: [...this.state.messages, decodedMessage.message]
                 });
+            } else if (decodedMessage.type === 'ONLINE_USERS') {
+                this.setState( {
+                    onlineUsers: decodedMessage.onlineUsers
+                });
             }
         };
-    }
+    };
+
+
+
+    sendMessage = () => {
+        const message = JSON.stringify({
+            type: 'CREATE_MESSAGE',
+            text: this.state.messageText,
+            username: this.props.user.username
+        });
+
+        this.websocket.send(message);
+    };
 
     render() {
         return (
-            <Fragment>
-                <div className="container">
-                    <div className="item list-group">
-                        <h5>Online users</h5>
-                        <a href="#" className="list-group-item list-group-item-action active">
-                            Cras justo odio
-                        </a>
-                        <a href="#" className="list-group-item list-group-item-action">Dapibus ac facilisis in</a>
-                        <a href="#" className="list-group-item list-group-item-action">Morbi leo risus</a>
-                        <a href="#" className="list-group-item list-group-item-action">Porta ac consectetur ac</a>
-                        <a href="#" className="list-group-item list-group-item-action disabled" tabIndex="-1"
-                           aria-disabled="true">Vestibulum at eros</a>
-                    </div>
-                    <div className="item chat-room">
-                        <h5>Chat room</h5>
-                        {this.state.messages.map((message, i) => (
-                            <Message
-                                key={i}
-                                username={message.username}
-                                text={message.text}
-                            />
-                        ))}
-                    </div>
+            <div className="row">
+                <div className="col-12 col-sm-4">
+                    <OnlineUsersList onlineUsers={this.state.onlineUsers}/>
                 </div>
-                    <Form
-                        error={this.props.error}
-                    />
-            </Fragment>
+                <div className="col-12 col-sm-8">
+                    <Messages/>
+                    <ChatForm/>
+                </div>
+            </div>
         );
     }
 }

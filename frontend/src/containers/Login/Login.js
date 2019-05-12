@@ -26,7 +26,7 @@ class Login extends Component {
         return (
             <Fragment>
                 <h2 className="text-center my-4">Login</h2>
-                <div className="user-form">
+                <div className="user-form box">
                     {this.props.error && (
                         <div className="alert alert-danger">
                             {this.props.error.message || this.props.error.global}

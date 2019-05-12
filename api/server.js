@@ -31,6 +31,15 @@ mongoose.connect(config.dbUrl, config.mongoOptions).then(() => {
 
         const id = nanoid();
         activeConnections[id] = {ws, user};
+
+        const onlineUsers = Object.keys(activeConnections).map(connId => {
+            return activeConnections[connId].user.username;
+        });
+
+        ws.send(JSON.stringify({
+            type: 'ONLINE_USERS',
+            onlineUsers
+        }));
     
         ws.on('message', msg => {
             const decodedMessage = JSON.parse(msg);

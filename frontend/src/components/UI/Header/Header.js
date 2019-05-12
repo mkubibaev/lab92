@@ -6,16 +6,23 @@ const Header = ({user, logout}) => {
         <nav className="navbar navbar-dark bg-success">
             <NavLink to="/" className="navbar-brand">Chat</NavLink>
             {user
-                ? <div>
-                    <span className="fullName">Hi, {user.fullName}</span>
-                    <span onClick={logout} className="btn btn-sm btn-outline-light">Log out</span>
-                </div>
-                : <div>
-                    <NavLink to="/register" className="navbar-brand">Register</NavLink>
-                    <NavLink to="/login" className="navbar-brand">Login</NavLink>
-                </div>
+                ? <ul className="navbar-nav">
+                    <li className="nav-item">
+                        <span className="nav-link">Hi, {user.fullName}</span>
+                    </li>
+                    <li className="nav-item" onClick={logout}>
+                        <span className="nav-link">Log out</span>
+                    </li>
+                </ul>
+                : <ul className="navbar-nav">
+                    <li className="nav-item">
+                        <NavLink to="/register" className="nav-link">Register</NavLink>
+                    </li>
+                    <li className="nav-item">
+                        <NavLink to="/login" className="nav-link">Login</NavLink>
+                    </li>
+                </ul>
             }
-
         </nav>
     );
 };
