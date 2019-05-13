@@ -3,18 +3,13 @@ import {connect} from "react-redux";
 import OnlineUsersList from "../../components/OnlineUsersList/OnlineUsersList";
 import Messages from "../../components/Messages/Messages";
 import ChatForm from "../../components/ChatForm/ChatForm";
-import {wsURL} from "../../constants";
 import store from "../../store/configureStore";
+import {connectChat, leftChat} from "../../store/actions/chatFunctions";
 
 class Chat extends Component {
-    state = {
-        messages: [],
-        messageText: ''
-    };
-
     componentDidMount() {
-        this.websocket = new WebSocket(`${wsURL}/chat?token=${this.props.user.token}`);
-
+        this.websocket = connectChat(this.props.user.token, this.props.user.username);
+        
         this.websocket.onmessage = event => {
             const decodedMessage = JSON.parse(event.data);
 
@@ -24,15 +19,9 @@ class Chat extends Component {
         };
     };
 
-    sendMessage = messageText => {
-        const message = JSON.stringify({
-            type: 'CREATE_MESSAGE',
-            text: messageText,
-            username: this.props.user.username
-        });
-
-        this.websocket.send(message);
-    };
+    componentWillUnmount() {
+        leftChat(this.websocket, this.props.user.username);
+    }
 
     render() {
         return (
@@ -45,7 +34,8 @@ class Chat extends Component {
                         messages={this.props.messages}
                     />
                     <ChatForm
-                        onSubmit={this.sendMessage}
+                        ws={this.websocket}
+                        user={this.props.user.username}
                     />
                 </div>
             </div>

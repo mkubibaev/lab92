@@ -6,6 +6,7 @@ const nanoid = require('nanoid');
 const config = require('./config');
 const users = require('./routes/users');
 const User = require('./models/User');
+const Message = require('./models/Message');
 
 const app = express();
 const expressWs = require('express-ws')(app);
@@ -32,6 +33,17 @@ mongoose.connect(config.dbUrl, config.mongoOptions).then(() => {
         const id = nanoid();
         activeConnections[id] = {ws, user};
 
+        const connectingMessage = new Message({text: user.username + ' connected'});
+        await connectingMessage.save();
+
+        Object.keys(activeConnections).forEach(connId => {
+            const conn = activeConnections[connId].ws;
+            conn.send(JSON.stringify({
+                type: 'USER_CONNECTED',
+                message: connectingMessage
+            }));
+        });
+
         const onlineUsers = Object.keys(activeConnections).map(connId => {
             return activeConnections[connId].user.username;
         });
@@ -40,21 +52,57 @@ mongoose.connect(config.dbUrl, config.mongoOptions).then(() => {
             type: 'ONLINE_USERS',
             onlineUsers
         }));
+
+        ws.send(JSON.stringify({
+            type: 'LATEST_MESSAGES',
+            messages: await Message.find().limit(30)
+        }))
     
-        ws.on('message', msg => {
+        ws.on('message', async msg => {
             const decodedMessage = JSON.parse(msg);
+            let message = null;
+            let messageForSend = '';
 
             switch (decodedMessage.type) {    
                 case 'CREATE_MESSAGE':
-                    const message = JSON.stringify({
-                        type: 'NEW_MESSAGE', message: {
-                            username: decodedMessage.username,
-                            text: decodedMessage.text
-                        }
+                    message = new Message({text: decodedMessage.text});
+                    await message.save();
+
+                    messageForSend = JSON.stringify({
+                        type: 'NEW_MESSAGE',
+                        message
+                    });
+
+                    Object.keys(activeConnections).forEach(connId => {
+                        const conn = activeConnections[connId].ws;
+                        conn.send(messageForSend);
+                    });
+                    break; 
+                case 'USER_LEFT':
+                    message = new Message({text: decodedMessage.user + ' left'});
+                    await message.save();
+
+                    const userIndex = onlineUsers.indexOf(decodedMessage.user);
+
+                    if (userIndex !== -1) {
+                        onlineUsers.splice(userIndex, 1);
+                    }
+
+                    messageForSend = JSON.stringify({
+                        type: 'USER_LEFT',
+                        message
                     });
                     Object.keys(activeConnections).forEach(connId => {
                         const conn = activeConnections[connId].ws;
-                        conn.send(message);
+                        conn.send(messageForSend);
+                    });
+
+                    Object.keys(activeConnections).forEach(connId => {
+                        const conn = activeConnections[connId].ws;
+                        conn.send(JSON.stringify({
+                            type: 'ONLINE_USERS',
+                            onlineUsers
+                        }));
                     });
                     break;
                 default:

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import FormElement from "../UI/Form/FormElement";
+import {sendMessage} from "../../store/actions/chatFunctions";
 
 class ChatForm extends Component {
     state = {
@@ -12,11 +13,13 @@ class ChatForm extends Component {
         });
     };
 
-    submitFormHandler = event => {
+    submitFormHandler = async event => {
         event.preventDefault();
-
         const state = {...this.state};
-        this.props.onSubmit(state.message);
+        const text = this.props.user + ': ' + state.message;
+
+        await sendMessage(this.props.ws, text);
+        this.setState({message: ''});
     };
 
     getFieldHasError = fieldName => {
@@ -37,7 +40,7 @@ class ChatForm extends Component {
                             <FormElement
                                 propertyName="message"
                                 type="text"
-                                value={this.state.password}
+                                value={this.state.message}
                                 onChange={this.inputChangeHandler}
                                 error={this.getFieldHasError('message')}
                                 placeholder="Enter message"

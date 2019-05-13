@@ -6,9 +6,9 @@ const Messages = props => {
             <h5>Messages</h5>
             <div className="box p-3 mb-4">
                 <div className="messages">
-                    {props.messages.map((message, i) => (
-                        <p key={i}>
-                            <strong>{message.username}</strong>: <span>{message.text}</span>
+                    {props.messages.map(message => (
+                        <p key={message._id} className="border-bottom">
+                            <span>{message.text}</span>
                         </p>
                     ))}
                 </div>
