@@ -4,7 +4,7 @@ const OnlineUsersList = props => {
     return (
         <Fragment>
             <h5>Online users</h5>
-            <div className="box p-3">
+            <div className="box p-3 mb-3">
                 <ul className="m-0">
                     {props.onlineUsers.map((user, i) => (
                         <li key={i}>{user}</li>

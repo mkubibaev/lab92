@@ -9,7 +9,7 @@ import {connectChat, leftChat} from "../../store/actions/chatFunctions";
 class Chat extends Component {
     componentDidMount() {
         this.websocket = connectChat(this.props.user.token, this.props.user.username);
-        
+
         this.websocket.onmessage = event => {
             const decodedMessage = JSON.parse(event.data);
 
@@ -26,12 +26,14 @@ class Chat extends Component {
     render() {
         return (
             <div className="row">
-                <div className="col-12 col-sm-4">
+                <div className="col-12 col-md-4">
                     <OnlineUsersList onlineUsers={this.props.onlineUsers}/>
                 </div>
-                <div className="col-12 col-sm-8">
+                <div className="col-12 col-md-8">
                     <Messages
                         messages={this.props.messages}
+                        user={this.props.user}
+                        ws={this.websocket}
                     />
                     <ChatForm
                         ws={this.websocket}

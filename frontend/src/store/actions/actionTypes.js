@@ -18,4 +18,5 @@ export const USER_LEFT = "USER_LEFT";
 
 export const LATEST_MESSAGES = "LATEST_MESSAGES";
 export const NEW_MESSAGE = "NEW_MESSAGE";
+export const DELETE_MESSAGE = "DELETE_MESSAGE";
 

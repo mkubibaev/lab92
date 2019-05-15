@@ -13,6 +13,15 @@ export const sendMessage = (ws, messageText) => {
     ws.send(message);
 };
 
+export const deleteMessage = (ws, messageId) => {
+    const message = JSON.stringify({
+        type: 'DELETE_MESSAGE',
+        messageId
+    });
+
+    ws.send(message);
+};
+
 export const newUser = (ws, user) => {
     const message = JSON.stringify({
         type: 'USER_CONNECTED',
