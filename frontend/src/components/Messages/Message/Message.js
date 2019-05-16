@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React from 'react';
 import {deleteMessage} from "../../../store/actions/chatFunctions";
 
 const Message = props => {
