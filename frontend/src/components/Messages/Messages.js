@@ -10,6 +10,7 @@ const Messages = props => {
                     <Message
                         key={message._id}
                         id={message._id}
+                        isSystem={message.isSystem}
                         text={message.text}
                         datetime={message.datetime}
                         ws={props.ws}

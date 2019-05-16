@@ -7,6 +7,10 @@ const MessageSchema = new Schema({
         type: String,
         required: true
     },
+    isSystem: {
+        type: Boolean,
+        default: false
+    },
     datetime: {
         type: Date,
         default: Date.now

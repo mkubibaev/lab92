@@ -40,7 +40,10 @@ const chat = async (ws, req) => {
         messages: await Message.find().limit(30)
     }));
 
-    const connectingMessage = new Message({text: user.username + ' connected'});
+    const connectingMessage = new Message({
+        text: user.username + ' connected',
+        isSystem: true
+    });
     await connectingMessage.save();
 
     sendMsgToAll(activeConnections, {
@@ -86,7 +89,10 @@ const chat = async (ws, req) => {
                 break;
 
             case 'USER_LEFT':
-                message = new Message({text: decodedMessage.user + ' left'});
+                message = new Message({
+                    text: decodedMessage.user + ' left',
+                    isSystem: true
+                });
                 await message.save();
 
                 sendMsgToAll(activeConnections, {

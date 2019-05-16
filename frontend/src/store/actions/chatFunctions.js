@@ -22,15 +22,6 @@ export const deleteMessage = (ws, messageId) => {
     ws.send(message);
 };
 
-export const newUser = (ws, user) => {
-    const message = JSON.stringify({
-        type: 'USER_CONNECTED',
-        user
-    });
-
-    ws.send(message);
-};
-
 export const leftChat = (ws, user) => {
     const message = JSON.stringify({
         type: 'USER_LEFT',
